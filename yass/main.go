@@ -84,9 +84,9 @@ func executePageTemplate(templates *template.Template, sourcePath string, destPa
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer destFile.Close()
 
 	err = pageTemplate.ExecuteTemplate(destFile, "root.html", "")
-	destFile.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -105,16 +105,15 @@ func copyFile(sourcePath string, destPath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer destFile.Close()
 
 	sourceFile, err := os.Open(sourcePath)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer sourceFile.Close()
 
 	io.Copy(destFile, sourceFile)
 
 	fmt.Println(destPath)
-
-	sourceFile.Close()
-	destFile.Close()
 }
