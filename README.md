@@ -11,15 +11,18 @@ The site is built using YASS, a little standalone Go utility. See `yass/` direct
 ## Local Site Development
 
 ```sh
-# Install dependencies (first time)
+# Install dependencies (first time) and 'yass' binary
 bin/setup.sh
 
 # Start server on http://localhost:3000 and watch for file changes in site/*
 bin/server.sh
+
+# Or just build the site
+yass build
 ```
 
 ## Production Deployment
 
 ```sh
-bin/build.sh
+bin/deploy.sh
 ```

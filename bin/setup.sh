@@ -9,7 +9,6 @@ echo '--> Installing fswatch and direnv...'
 brew install fswatch direnv
 
 echo '--> Installing YASS...'
-# Install YASS
 cd yass
 go install
 cd ..

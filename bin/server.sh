@@ -3,8 +3,10 @@
 set -e
 
 # Watch for changes in the background
-fswatch site | xargs -n1 bin/build.sh &
+fswatch site | xargs -n1 yass build &
 
-bin/build.sh
+# Run the initial build
+yass build
 
-go run yass/server/main.go
+# Start the server
+yass server

@@ -1,120 +1,34 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"io"
-	"log"
 	"os"
-	"path/filepath"
-	"strings"
-	"text/template"
-)
-
-const (
-	siteDirPath = "./site"
-	outDirPath  = "./_out"
+	"schrockwell/yass/generator"
+	"schrockwell/yass/server"
 )
 
 func main() {
-	// Ensure site dir exists
-	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
-		log.Fatalf("Directory '%s' not found", siteDirPath)
+	arg := ""
+
+	if len(os.Args) >= 2 {
+		arg = os.Args[1]
 	}
 
-	// Parse all templates in /site/templates/*
-	templatesGlob := filepath.Join(siteDirPath, "_templates", "*")
-	templates, err := template.ParseGlob(templatesGlob)
-	if err != nil {
-		log.Fatal(err)
+	if arg == "server" {
+		server.Start()
+	} else if arg == "build" {
+		generator.Run()
+	} else {
+		printHelp()
 	}
-
-	// Wipe _out directory
-	err = os.RemoveAll(outDirPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Recursively walk through site directory
-	filepath.Walk(siteDirPath, func(sourcePath string, info os.FileInfo, err error) error {
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		relPath, _ := filepath.Rel(siteDirPath, sourcePath)
-		if strings.HasPrefix(relPath, "_") {
-			return nil
-		}
-
-		fileInfo, err := os.Stat(sourcePath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		destPath := filepath.Join(outDirPath, relPath)
-
-		if filepath.Ext(sourcePath) == ".html" {
-			executePageTemplate(templates, sourcePath, destPath)
-		} else if !fileInfo.IsDir() {
-			copyFile(sourcePath, destPath)
-		}
-
-		return nil
-	})
 }
 
-func executePageTemplate(templates *template.Template, sourcePath string, destPath string) {
-	bytes, err := os.ReadFile(sourcePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+func printHelp() {
+	fmt.Print(`Usage: yass [command]
 
-	content := string(bytes)
-	pageTemplate, err := template.Must(templates.Clone()).New("content").Parse(content)
-	if err != nil {
-		log.Fatal(err)
-	}
+Commands:
 
-	destDirPath := filepath.Dir(destPath)
-	err = os.MkdirAll(destDirPath, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	destFile, err := os.Create(destPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer destFile.Close()
-
-	err = pageTemplate.ExecuteTemplate(destFile, "root.html", "")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(destPath)
-}
-
-func copyFile(sourcePath string, destPath string) {
-	destDirPath := filepath.Dir(destPath)
-	err := os.MkdirAll(destDirPath, os.ModePerm)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	destFile, err := os.Create(destPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer destFile.Close()
-
-	sourceFile, err := os.Open(sourcePath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer sourceFile.Close()
-
-	io.Copy(destFile, sourceFile)
-
-	fmt.Println(destPath)
+    build     Generate the site in _out/
+    server    Run a local web server for _out/
+`)
 }

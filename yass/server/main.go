@@ -1,11 +1,11 @@
-package main
+package server
 
 import (
 	"log"
 	"net/http"
 )
 
-func main() {
+func Start() {
 	fs := http.FileServer(http.Dir("./_out"))
 	http.Handle("/", fs)
 
