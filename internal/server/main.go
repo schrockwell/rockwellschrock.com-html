@@ -6,7 +6,7 @@ import (
 )
 
 func Start() {
-	fs := http.FileServer(http.Dir("./_out"))
+	fs := http.FileServer(http.Dir("./_site"))
 	http.Handle("/", fs)
 
 	log.Print("Listening on :3000...")

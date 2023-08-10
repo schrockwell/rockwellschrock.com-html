@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"schrockwell/yass/generator"
-	"schrockwell/yass/server"
+	"yass/internal/generator"
+	"yass/internal/server"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func printHelp() {
 
 Commands:
 
-    build     Generate the site in _out/
-    server    Run a local web server for _out/
+    build     Generate the site in _site/
+    server    Run a local web server for _site/
 `)
 }

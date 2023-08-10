@@ -12,10 +12,10 @@ The site is built using YASS, a little standalone Go utility. See `yass/` direct
 
 ```sh
 # Install dependencies (first time) and 'yass' binary
-bin/setup.sh
+scripts/setup.sh
 
-# Start server on http://localhost:3000 and watch for file changes in site/*
-bin/server.sh
+# Start dev server on http://localhost:3000 and watch for file changes in site/*
+scripts/dev.sh
 
 # Or just build the site
 yass build
@@ -24,5 +24,15 @@ yass build
 ## Production Deployment
 
 ```sh
-bin/deploy.sh
+scripts/deploy.sh
 ```
+
+## Directory Structure
+
+    _site/            <-- generated site ends up here (.gitignore'd)
+    web/              <-- site content root
+      _templates/     <-- flat dir of templates
+        root.html     <-- the root page layout
+      index.html      <-- home page
+
+It recursively walks the `web` directory, copying files over to the `_site` directory. `.html` files are evaluated as templates, making available all templates from `_templates`. All other file types are just copied.

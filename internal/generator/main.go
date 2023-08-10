@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	siteDirPath = "./site"
-	outDirPath  = "./_out"
+	siteDirPath = "./web"
+	outDirPath  = "./_site"
 )
 
 func Run() {
@@ -29,7 +29,7 @@ func Run() {
 		log.Fatal(err)
 	}
 
-	// Wipe _out directory
+	// Wipe _site directory
 	err = os.RemoveAll(outDirPath)
 	if err != nil {
 		log.Fatal(err)
