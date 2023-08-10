@@ -19,7 +19,7 @@ const (
 func main() {
 	// Ensure site dir exists
 	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
-		log.Fatal("Directory 'site/' not found")
+		log.Fatalf("Directory '%s' not found", siteDirPath)
 	}
 
 	// Parse all templates in /site/templates/*
