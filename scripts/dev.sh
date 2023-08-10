@@ -3,7 +3,7 @@
 set -e
 
 # Watch for changes in the background
-fswatch site | xargs -n1 yass build &
+fswatch web | xargs -n1 yass build &
 
 # Run the initial build
 yass build
