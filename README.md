@@ -1,38 +1,39 @@
-# rockwellschrock.com - deconstructed
+# rockwellschrock.com - The Old Web Era
 
-The site is built using YASS, a little standalone Go utility. See `yass/` directory README for more documentation.
-
-## Dependencies
-
-- Go 1.20
-- fswatch (optional)
-- direnv (optional)
-
-## Local Site Development
-
-```sh
-# Install dependencies (first time) and 'yass' binary
-scripts/setup.sh
-
-# Start dev server on http://localhost:3000 and watch for file changes in site/*
-scripts/dev.sh
-
-# Or just build the site
-yass build
-```
-
-## Production Deployment
-
-```sh
-scripts/deploy.sh
-```
+The site is generated using YASS, a little standalone Go utility. It utilizes the [text/template](https://pkg.go.dev/text/template) package from the standard library for rendering.
 
 ## Directory Structure
 
     _site/            <-- generated site ends up here (.gitignore'd)
     web/              <-- site content root
       _templates/     <-- flat dir of templates
-        root.html     <-- the root page layout
+        root.html     <-- the root page layout (required)
       index.html      <-- home page
 
-It recursively walks the `web` directory, copying files over to the `_site` directory. `.html` files are evaluated as templates, making available all templates from `_templates`. All other file types are just copied.
+YASS recursively walks the `web` directory, copying files over to the `_site` directory. The `.html` files are evaluated as individual templates, using all templates from `_templates` as a baseline. All other file extensions are copied directly.
+
+## Dependencies
+
+- Go 1.20
+- fswatch (optional, for dev only)
+- direnv (optional, for dev only)
+
+## Local Development
+
+```sh
+# Install dependencies and 'yass' binary (first time)
+scripts/setup.sh
+
+# Start dev server on http://localhost:3000 and watch for file changes in site/*
+scripts/dev.sh
+
+# Or just build the site and serve it up
+yass build && yass server
+```
+
+## Production Deployment
+
+```sh
+# Install 'yass' and build the site
+scripts/deploy.sh
+```
