@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -18,7 +17,7 @@ const (
 
 func main() {
 	// Ensure site dir exists
-	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(siteDirPath); os.IsNotExist(err) {
 		log.Fatalf("Directory '%s' not found", siteDirPath)
 	}
 
