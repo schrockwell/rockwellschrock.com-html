@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -11,13 +10,15 @@ import (
 	"text/template"
 )
 
-func main() {
-	siteDirPath := "./site"
-	outDirPath := "./_out"
+const (
+	siteDirPath = "./site"
+	outDirPath  = "./_out"
+)
 
+func main() {
 	// Ensure site dir exists
-	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
-		log.Fatal("Directory 'site/' not found")
+	if _, err := os.Stat(siteDirPath); os.IsNotExist(err) {
+		log.Fatalf("Directory '%s' not found", siteDirPath)
 	}
 
 	// Parse all templates in /site/templates/*
@@ -83,9 +84,9 @@ func executePageTemplate(templates *template.Template, sourcePath string, destPa
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer destFile.Close()
 
 	err = pageTemplate.ExecuteTemplate(destFile, "root.html", "")
-	destFile.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,16 +105,15 @@ func copyFile(sourcePath string, destPath string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer destFile.Close()
 
 	sourceFile, err := os.Open(sourcePath)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer sourceFile.Close()
 
 	io.Copy(destFile, sourceFile)
 
 	fmt.Println(destPath)
-
-	sourceFile.Close()
-	destFile.Close()
 }
