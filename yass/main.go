@@ -11,10 +11,12 @@ import (
 	"text/template"
 )
 
-func main() {
-	siteDirPath := "./site"
-	outDirPath := "./_out"
+const (
+	siteDirPath = "./site"
+	outDirPath  = "./_out"
+)
 
+func main() {
 	// Ensure site dir exists
 	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
 		log.Fatal("Directory 'site/' not found")
