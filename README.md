@@ -1,6 +1,6 @@
 # rockwellschrock.com - The Old Web Era
 
-The site is generated using YASS, a little standalone Go utility. It utilizes the [text/template](https://pkg.go.dev/text/template) package from the standard library for rendering.
+The site is generated using YASS (Yet Another Static Site), a little standalone Go utility. It utilizes the [text/template](https://pkg.go.dev/text/template) package from the standard library for rendering.
 
 ## Directory Structure
 
@@ -28,7 +28,7 @@ scripts/setup.sh
 scripts/dev.sh
 
 # Or just build the site and serve it up
-yass build && yass server
+yass queen && yass server
 ```
 
 ## Production Deployment
