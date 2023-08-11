@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-func Start() {
-	fs := http.FileServer(http.Dir("./_site"))
+func Start(outDirPath string) {
+	fs := http.FileServer(http.Dir(outDirPath))
 	http.Handle("/", fs)
 
 	log.Print("Listening on :3000...")

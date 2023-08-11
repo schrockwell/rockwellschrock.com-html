@@ -11,31 +11,26 @@ import (
 	"text/template"
 )
 
-const (
-	siteDirPath = "./web"
-	outDirPath  = "./_site"
-)
-
-func Run() {
+func Run(siteDirPath string, outDirPath string) {
 	// Ensure site dir exists
 	if _, err := os.Stat(siteDirPath); errors.Is(err, os.ErrNotExist) {
 		log.Fatalf("Directory '%s' not found", siteDirPath)
 	}
 
-	// Parse all templates in /site/templates/*
+	// Parse all templates
 	templatesGlob := filepath.Join(siteDirPath, "_templates", "*")
 	templates, err := template.ParseGlob(templatesGlob)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Wipe _site directory
+	// Wipe output directory
 	err = os.RemoveAll(outDirPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Recursively walk through site directory
+	// Recursively walk through input directory
 	filepath.Walk(siteDirPath, func(sourcePath string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatal(err)
@@ -69,6 +64,7 @@ func executePageTemplate(templates *template.Template, sourcePath string, destPa
 		log.Fatal(err)
 	}
 
+	// Parse the page as the "content" template
 	content := string(bytes)
 	pageTemplate, err := template.Must(templates.Clone()).New("content").Parse(content)
 	if err != nil {
@@ -87,6 +83,7 @@ func executePageTemplate(templates *template.Template, sourcePath string, destPa
 	}
 	defer destFile.Close()
 
+	// Run the root template with the page template added to it
 	err = pageTemplate.ExecuteTemplate(destFile, "root.html", "")
 	if err != nil {
 		log.Fatal(err)

@@ -7,6 +7,11 @@ import (
 	"yass/internal/server"
 )
 
+const (
+	siteDirPath = "./web"
+	outDirPath  = "./_site"
+)
+
 func main() {
 	arg := ""
 
@@ -15,9 +20,9 @@ func main() {
 	}
 
 	if arg == "server" {
-		server.Start()
+		server.Start(outDirPath)
 	} else if arg == "queen" {
-		generator.Run()
+		generator.Run(siteDirPath, outDirPath)
 	} else {
 		printHelp()
 	}
