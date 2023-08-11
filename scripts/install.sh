@@ -5,7 +5,7 @@ set -e
 echo '--> Installing Go...'
 asdf install
 
-echo '--> Installing fswatch and direnv...'
+echo '--> Installing Homebrew dependencies...'
 brew install fswatch direnv
 
 echo '--> Installing YASS...'

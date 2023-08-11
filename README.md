@@ -14,26 +14,29 @@ YASS recursively walks the `web` directory, copying files over to the `_site` di
 
 ## Dependencies
 
-- Go 1.20
-- fswatch (optional, for dev only)
-- direnv (optional, for dev only)
+- Required
+  - Go 1.20
+  - Make
+- Optional, for development only
+  - direnv
+  - fswatch
 
 ## Local Development
 
 ```sh
 # Install dependencies and 'yass' binary (first time)
-scripts/setup.sh
+make install
 
 # Start dev server on http://localhost:3000 and watch for file changes in site/*
-scripts/dev.sh
+make dev
 
-# Or just build the site and serve it up
-yass queen && yass server
+# Or just build the site
+make
 ```
 
 ## Production Deployment
 
 ```sh
 # Install 'yass' and build the site
-scripts/deploy.sh
+make deploy
 ```
