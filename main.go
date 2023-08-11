@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"yass/internal/generator"
+	"yass/internal/resizer"
 	"yass/internal/server"
 )
 
@@ -19,10 +20,12 @@ func main() {
 		arg = os.Args[1]
 	}
 
-	if arg == "server" {
-		server.Start(outDirPath)
-	} else if arg == "queen" {
+	if arg == "queen" {
 		generator.Run(siteDirPath, outDirPath)
+	} else if arg == "convert" {
+		resizer.Run(siteDirPath)
+	} else if arg == "server" {
+		server.Start(outDirPath)
 	} else {
 		printHelp()
 	}
@@ -33,7 +36,8 @@ func printHelp() {
 
 Commands:
 
-    queen     Generate the site in _site/
-    server    Run a local web server for _site/
+    convert     Reformat and rename JPEG images in-place in web/
+    queen       Generate the site in _site/
+    server      Run a local web server for _site/
 `)
 }

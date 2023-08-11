@@ -12,6 +12,12 @@ The site is generated using YASS (Yet Another Static Site), a little standalone 
 
 YASS recursively walks the `web` directory, copying files over to the `_site` directory. The `.html` files are evaluated as individual templates, using all templates from `_templates` as a baseline. All other file extensions are copied directly.
 
+## Commands
+
+- `yass convert` - process and rename all JPEG images in `web/`, in-place
+- `yass queen` - generate the site from `web/` and output to `_site/`
+- `yass server` - run a local dev server that serves `_site/` on port 3000
+
 ## Dependencies
 
 - Required
