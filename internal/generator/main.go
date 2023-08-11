@@ -31,7 +31,7 @@ func Run(siteDirPath string, outDirPath string) {
 	}
 
 	// Recursively walk through input directory
-	filepath.Walk(siteDirPath, func(sourcePath string, info os.FileInfo, err error) error {
+	filepath.Walk(siteDirPath, func(sourcePath string, fileInfo os.FileInfo, err error) error {
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -39,11 +39,6 @@ func Run(siteDirPath string, outDirPath string) {
 		relPath, _ := filepath.Rel(siteDirPath, sourcePath)
 		if strings.HasPrefix(relPath, "_") {
 			return nil
-		}
-
-		fileInfo, err := os.Stat(sourcePath)
-		if err != nil {
-			log.Fatal(err)
 		}
 
 		destPath := filepath.Join(outDirPath, relPath)
