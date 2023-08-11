@@ -1,0 +1,182 @@
+{{define "title"}}The Indomitable Message Type &ndash;{{end}}
+<h2>The Indomitable Message Type</h2>
+<h3>March 4, 2023</h3>
+
+<p>
+  When I first started building <a href="http://www.remotehamradio.com">Remote Ham Radio</a> in 2012, WebSockets were
+  less than a year out of <a href="https://datatracker.ietf.org/doc/rfc6455/">RFC proposal</a>, but they were already
+  the clear future for developing realtime experiences in the browser.
+</p>
+
+<p>
+  WebSockets are bidirectional streams of data, conveniently packetized into individual messages for ease of sending and
+  receiving.
+</p>
+
+<p>So, what's the content of those messages? WebSockets leave that as an exercise for the developer.</p>
+
+<h3>First contact</h3>
+
+<p>
+  On September 21, 2012 at 1:49am (!), the first commit was made to the RHR server repository. It contained the Ruby
+  <code>Message</code> class.
+</p>
+
+<pre>
+class Message
+  attr_accessor :id, :type, :info
+end
+</pre>
+
+<p>
+  Serialized to JSON, this simple data structure would go on to endure the lifetime of RHR, largely unchanged. It
+  enabled the application to scale from a tech demo to a distributed pub-sub message broker that pushes millions of
+  message per hour.
+</p>
+
+<p>
+  This message format is not a groundbreaking concept. In fact, I didn't even come up with it. The original source is
+  <a href="https://gist.github.com/ismasan/299789/ab8fc0daea1aab67e504c14423d9dc1301485bc9">this Gist</a> by
+  <a href="https://ismaelcelis.com">Ismael Celis</a>. The <code>FancyWebSocket</code> class survived in the client
+  codebase for many years. And why not? It just worked.
+</p>
+
+<h4>Here's the spec</h4>
+
+<p>
+  Those three fields &ndash; <code>id</code>, <code>type</code>, and <code>info</code> &ndash; are the real MVP. In
+  <a href="https://en.wikipedia.org/wiki/Most_valuable_player">both</a>
+  <a href="https://en.wikipedia.org/wiki/Minimum_viable_product">senses</a>.
+</p>
+
+<pre>
+{"id": "rotor123", "type": "move", "info": {"heading": 45}}
+</pre>
+
+<p>
+  The <code>id</code> determines which server component the message is destined to (or from), the
+  <code>type</code> indicates the shape of the message, and <code>info</code> is an arbitrary map/dict/hash/object
+  payload whose contents are based on the message <code>type</code>.
+</p>
+
+<p>
+  Early on, each user client had a dedicated WebSocket connection to each remote station. As the service grew, this
+  scheme did not scale, so a central server was established to forward messages between the clients and the servers.
+  This necessitated two additional fields, <code>user_id</code> and <code>site_id</code>, so that messages could be
+  routed through the central hub.
+</p>
+
+<p>Five fields in a JSON object. That's it &ndash; that's the whole API.</p>
+
+<h3>Pros</h3>
+
+<h4>Schemaless</h4>
+
+<p>
+  There is no schema definition, but that's manageable for a single-developer team. It enables rapid development of new
+  message types across the two or three repos requried to plumb everything together.
+</p>
+
+<p>
+  It also makes gradual deployments easier, as clients do not have to agree on a common schema version. As a tradeoff,
+  clients must ignore unexpected message types, and provide default values for new fields that might not be fully
+  deployed yet.
+</p>
+
+<h4>Portable</h4>
+
+<p>
+  It's a portable format, in the sense that an individual message can be easily moved across several layers of the
+  application. It works in Ruby, it works in JS, and it's survived the transition between <i>five</i> different message
+  brokers &ndash; first peer-to-peer WebSockets, then Ruby, then RabbitMQ, then Redis, and now Elixir.
+</p>
+
+<h4>Ingest-able</h4>
+
+<p>
+  As a corollary, it's extremely easy to get messages into the system. Some clients communicate via an HTTP API instead
+  of a WebSocket, and they can take advantage of the same message format by POSTing a message to a single HTTP endpoint.
+</p>
+
+<h3>Room for improvement</h3>
+
+<h4>A schema</h4>
+
+<p>
+  A proper JSON schema would be nice, to prevent malformed messages from propagating too far into the system.
+  Documentation would be a beneficial side-effect, as there is currently no single source of truth for the 100+ message
+  types. This becomes much more valuable when <i>Developer 2 has entered the chat</i>.
+</p>
+
+<h4>Synchronous requests</h4>
+
+<p>
+  Messages are fire-and-forget, and there is no concept of a transaction or an acknowledement that a particular message
+  has been handled. That's fine, as the async model is particularly well-suited for interacting with physical devices.
+</p>
+
+<p>
+  Hardware will emit unsolicited messages when its state changes, often it's slow to respond to requests, and sometimes
+  you trip over a cord and suddenly it doesn't respond at all. Don't forget, there's a 4,800 baud serial device on the
+  other end of that Gigabit connection.
+</p>
+
+<p>
+  In the end, it's easier for a client to fire off a message and pray that it receives an expected response in the
+  future.
+</p>
+
+<p>
+  The downside is that clients can resemble
+  <a href="https://en.wikipedia.org/wiki/Spaghetti_code">a plate of spaghetti</a>, where the sending of a request is
+  completely decoupled from the handling of the response. This is a pain for actions that are truly transactional in
+  nature, so this protocol could be improved to optionally support an
+  <a href="https://en.wikipedia.org/wiki/Acknowledgement_(data_networks)">ACK/NACK</a> scheme for those cases.
+</p>
+
+<h4>Binary format</h4>
+
+<p>JSON is not the lightest format, but it is human-readible! And as a human, I appreciate that.</p>
+
+<p>
+  The application has not reached a scale where bandwidth has become costly or otherwise a limiting factor in its
+  growth, so JSON continues to reign. Phoenix already applies
+  <a href="https://hexdocs.pm/phoenix/Phoenix.Endpoint.html#socket/3-websocket-configuration"
+    >gzip compression to WebSockets</a
+  >, which is Good Enough. A
+  <a
+    href="https://www.lucidchart.com/techblog/2019/12/06/json-compression-alternative-binary-formats-and-compression-methods/"
+    >binary message format</a
+  >
+  could be considered in the future, trading off bandwidth for additional complexity and CPU.
+</p>
+
+<h4>URIs</h4>
+
+<p>
+  It's interesting to consider unifying the <code>user_id</code>, <code>site_id</code>, <code>id</code>, and
+  <code>type</code> fields into a single <code>uri</code> field.
+</p>
+
+<pre>
+rhr://user_id@site_id/id/type
+</pre>
+
+<p>I'm not sure what advantage this would provide, but it looks neat.</p>
+
+<h3>Building the "right thing"</h3>
+
+<p>
+  Growing codebases eventually meet a point where their initial assumptions are challenged. External pressures like
+  cost, complexity, security, and features creep in over time &ndash; that's a given. So when beginning a project, it's
+  tempting to try to build the "right thing" from the start. That's the heart of the
+  <a href="https://en.wikipedia.org/wiki/Second-system_effect">second-system effect</a>.
+</p>
+
+<p>
+  However, the ability to completely reshape a product over time is one of the great affordances we have as developers.
+  By recognizing that we don't have complete knowledge of current and future requirements, usually the best option is to
+  build the simplest solution.
+</p>
+
+<p>Sometimes, it might just be fancy enough.</p>

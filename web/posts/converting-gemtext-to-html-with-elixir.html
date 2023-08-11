@@ -1,0 +1,47 @@
+{{define "title"}}Converting Gemtext to HTML With Elixir &ndash;{{end}}
+<h2>Converting Gemtext to HTML With Elixir</h2>
+<h3>April 29, 2023</h3>
+<p>
+  I spent a few hours this Saturday afternoon writing this little library,
+  <a href="https://github.com/schrockwell/gemtext_to_html">gemtext_to_html</a>. I'd like to spend more time browsing and
+  developing for <a href="https://gemini.circumlunar.space/">Gemini</a> space, and this is the first step towards making
+  something Elixir-y to that end.
+</p>
+
+<p>
+  It ships with basic HTML components, but of course you can define your own components using regular old Phoenix
+  Components and HEEx templates.
+</p>
+
+<p>
+  Find it on <a href="https://github.com/schrockwell/gemtext_to_html">GitHub</a>,
+  <a href="https://hexdocs.pm/gemtext_to_html/GemtextToHTML.html">HexDocs</a> and
+  <a href="https://hex.pm/packages/gemtext_to_html">Hex</a>.
+</p>
+
+<pre>
+defmodule MyApp.MyComponents do
+  @behaviour GemtextToHTML.Components
+  import Phoenix.Component
+
+  def h1(assigns) do
+    ~H"""
+    &lt;h1 class="text-lg font-bold"&gt;&lt;%= @text %&gt;&lt;/h1&gt;
+    """
+  end
+
+  # ...and so on...
+end
+
+gemtext = """
+# Hello, world
+
+* this is a list
+* indeed
+
+pretty neat
+"""
+
+GemtextToHTML.render_to_string(gemtext, components: MyApp.MyComponents)
+# => "&lt;h1 class="text-lg font-bold"&gt;Hello, world&lt;/h1&gt;" &lt;&gt; ...
+</pre>

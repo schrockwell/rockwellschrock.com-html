@@ -1,0 +1,42 @@
+{{define "title"}}Rubber-Duck-Driven Development &ndash;{{end}}
+<h2>Rubber-Duck-Driven Development</h2>
+<h3>April 17, 2023</h3>
+
+<p>Today, I sat down to some code I wrote a week ago. I came across the assignment:</p>
+
+<pre>
+loading?: true
+</pre>
+
+<p>
+  "Huh," I thought. "This is confusing. This isn't really an indication that anything is actually loading. In fact, we
+  show a <i>fake</i> loading state for 500 milliseconds, while we sleep and wait for the text input to
+  <a href="https://hexdocs.pm/phoenix_live_view/bindings.html#rate-limiting-events-with-debounce-and-throttle"
+    >debounce</a
+  >
+  before actually loading anything. This variable just controls if the indeterminate spinner is visible. I should
+  document that."
+</p>
+
+<pre>
++ # Controls if the spinner is visible
+  loading?: true
+</pre>
+
+<p>"Wait a second..."</p>
+
+<pre>
+- # Controls if the spinner is visible
+- loading?: true
++ spinner_visible?: true
+</pre>
+
+<p>
+  And magically, through the power of <a href="https://en.wikipedia.org/wiki/Rubber_duck_debugging">rubberducking</a>,
+  it was made better.
+</p>
+
+<p>
+  As always,
+  <a href="https://twitter.com/codinghorror/status/567434195987738624?lang=en">Jeff Atwood already nailed it</a>.
+</p>

@@ -1,0 +1,21 @@
+{{define "title"}}Making dbg/2 Useful In IEx &ndash;{{end}}
+<h2>Making dbg/2 Useful In IEx</h2>
+<h3>April 17, 2023</h3>
+
+<p>
+  The default behavior of <a href="https://hexdocs.pm/elixir/1.14.4/Kernel.html#dbg/2">dbg/2</a> when running an
+  application via IEx (e.g. <code>iex -S mix phx.server</code>) is to halt execution and request to
+  <a href="https://hexdocs.pm/iex/1.13/IEx.html#pry/0">pry</a> into the executing context.
+</p>
+
+<p>
+  However, in most cases I just want <code>dbg/2</code> to behave a like a fancier
+  <a href="https://hexdocs.pm/elixir/1.14.4/IO.html#inspect/2">IO.inspect/2</a>.
+</p>
+
+<p>This can be accomplished by adding this configuration to <code>~/.iex.exs</code>:</p>
+
+<pre>
+# Change behavior of dbg/2 to stop prying when in IEx
+Application.put_env(:elixir, :dbg_callback, {Macro, :dbg, []})
+</pre>
