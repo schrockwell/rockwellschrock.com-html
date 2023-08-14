@@ -3,7 +3,7 @@
 set -e
 
 # Watch for changes in the background
-fswatch web | xargs -n1 yass convert && yass queen &
+fswatch web | xargs -n1 sh -c 'yass convert && yass queen;' &
 
 # Run the initial build
 yass queen
